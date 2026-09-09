@@ -2,15 +2,9 @@ services:
   - type: web
     name: deal-portal
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm ci
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DB_PATH
-        value: /var/data/deal.sqlite
-    disk:
-      name: deal-data
-      mountPath: /var/data
-      sizeGB: 1
