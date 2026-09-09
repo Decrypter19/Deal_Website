@@ -41,7 +41,9 @@ Copy `.env.example` to get started. All are optional.
 | Variable         | Default                                         | Purpose |
 | ---------------- | ----------------------------------------------- | ------- |
 | `PORT`           | `3000`                                          | Port to listen on |
-| `DB_PATH`        | `./data/deal.sqlite`                            | SQLite file location |
+| `DB_PATH`        | `./data/deal.sqlite`                            | Local SQLite file (used when Turso is not set) |
+| `TURSO_DATABASE_URL` | *(empty)*                                   | `libsql://...` URL of a hosted Turso database |
+| `TURSO_AUTH_TOKEN`   | *(empty)*                                   | Token for that Turso database |
 | `OFFICER_EMAILS` | *(empty)*                                       | Comma-separated emails that get the officer role at sign-up |
 | `SCHOOL_DOMAINS` | `brophybroncos.org,xaviersaints.org,.edu,k12.` | Email must match one of these to register |
 
@@ -51,17 +53,25 @@ No email service is connected, so "Forgot password" does not send mail.
 Instead an officer opens **Members → Reset link** next to the member, and sends
 them the link (text, Discord, etc.). The link works once and expires in 2 hours.
 
-## Deploying (free tier friendly)
+## Deploying for free (Render + Turso)
 
-Any host that runs Node works. Two notes:
+Render's free tier has no persistent disk, so in production the database lives
+on Turso (hosted SQLite, free tier) instead of a local file.
 
-- SQLite is a file, so the host needs a **persistent disk** (Render disks,
-  Railway volumes, Fly volumes). Point `DB_PATH` at it. Without one the
-  database resets on every deploy.
-- Cookies are marked `Secure` automatically when `NODE_ENV=production`, so
-  serve over HTTPS (every host above does this for you).
+1. Create a Turso database at https://turso.tech (free). Copy its URL
+   (`libsql://<name>-<org>.turso.io`) and create an auth token.
+2. On https://render.com: New → Blueprint → pick this repo. `render.yaml`
+   configures the service; when prompted, paste `TURSO_DATABASE_URL` and
+   `TURSO_AUTH_TOKEN`.
+3. Open the Render URL, go to the portal, and create the first account —
+   it becomes the officer.
 
-A `Dockerfile` is included; it stores the database in `/data`.
+Free Render instances sleep after 15 minutes idle, so the first load after a
+while takes ~30 s. Cookies are marked `Secure` when `NODE_ENV=production`
+(set by the blueprint).
+
+A `Dockerfile` is included for other hosts; with no Turso variables it uses a
+local file in `/data`.
 
 ## Security notes
 
