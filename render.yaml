@@ -2,7 +2,7 @@ services:
   - type: web
     name: deal-portal
     runtime: node
-    plan: free
+    plan: starter
     buildCommand: npm ci
     startCommand: npm start
     envVars:
