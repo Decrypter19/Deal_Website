@@ -452,7 +452,7 @@ body.in-portal .site-head,body.in-portal .site-foot{display:none}
     <a class="btn btn--paper" href="#/support">Support DEAL</a>
     <a class="btn btn--ghost" style="color:#fff;border-color:rgba(255,255,255,.7)" href="#/get-involved">Get involved</a>
   </div>
-  <a class="ig bare" href="https://www.instagram.com/brophy.deal.club/" target="_blank" rel="noopener">@brophy.deal.club on Instagram</a>
+  <a class="ig bare" href="https://www.instagram.com/deal.inc/" target="_blank" rel="noopener">@deal.inc on Instagram</a>
 </div>
 
 <main id="main">
@@ -552,7 +552,7 @@ body.in-portal .site-head,body.in-portal .site-foot{display:none}
         <div>
           <h3 class="h3">Photos from recent drives and deliveries</h3>
         </div>
-        <a class="btn btn--ghost bare" href="https://www.instagram.com/brophy.deal.club/" target="_blank" rel="noopener">Follow @brophy.deal.club</a>
+        <a class="btn btn--ghost bare" href="https://www.instagram.com/deal.inc/" target="_blank" rel="noopener">Follow @deal.inc</a>
       </div>
     </div>
   </section>
@@ -828,7 +828,7 @@ body.in-portal .site-head,body.in-portal .site-foot{display:none}
       </div>
 
       <div class="p-view" data-pv="tasks" hidden>
-        <div class="panel">
+        <div class="panel officer-only" hidden>
           <h4>Assign a task</h4>
           <form id="taskForm" class="p-form">
             <div class="field"><label for="tkWhat">What needs doing</label><input id="tkWhat" type="text" required></div>
@@ -974,9 +974,9 @@ body.in-portal .site-head,body.in-portal .site-foot{display:none}
       <div>
         <h5>Contact</h5>
         <ul>
-          <li><a class="bare" href="mailto:dealforchange@outlook.com">dealforchange@outlook.com</a></li>
+          <li><a class="bare" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=dealforchange@outlook.com" target="_blank" rel="noopener">dealforchange@outlook.com</a></li>
           <li><a class="bare" href="https://dealforchange.org" target="_blank" rel="noopener">dealforchange.org</a></li>
-          <li><a class="bare" href="https://www.instagram.com/brophy.deal.club/" target="_blank" rel="noopener">@brophy.deal.club on Instagram</a></li>
+          <li><a class="bare" href="https://www.instagram.com/deal.inc/" target="_blank" rel="noopener">@deal.inc on Instagram</a></li>
         </ul>
       </div>
     </div>
@@ -1170,7 +1170,7 @@ function bindReveals(){
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function pressEmptyHTML(){
   return `<p style="max-width:38em">Press coverage, interviews, and announcements will appear here as DEAL grows.</p>
-    <p class="small" style="margin-top:1.1rem">Writing about DEAL? Reach the team at <a class="bare" href="mailto:dealforchange@outlook.com">dealforchange@outlook.com</a>.</p>`;
+    <p class="small" style="margin-top:1.1rem">Writing about DEAL? Reach the team at <a class="bare" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=dealforchange@outlook.com" target="_blank" rel="noopener">dealforchange@outlook.com</a>.</p>`;
 }
 function pressEntryHTML(e){
   return `<li>
@@ -1288,8 +1288,8 @@ $("#resetForm").addEventListener("submit",async e=>{
       body+="School or community: "+$("#ivSchool").value.trim()+"\nRole: "+$("#ivRole").value.trim()+"\n";
     }
     if(msg)body+="\n"+msg;
-    location.href="mailto:dealforchange@outlook.com?subject="+encodeURIComponent("DEAL: "+v)+"&body="+encodeURIComponent(body);
-    out.textContent="Opening your email app. If nothing opens, email dealforchange@outlook.com directly.";
+    window.open("https://mail.google.com/mail/?view=cm&fs=1&to=dealforchange@outlook.com&su="+encodeURIComponent("DEAL: "+v)+"&body="+encodeURIComponent(body),"_blank","noopener");
+    out.textContent="Opening Gmail in a new tab. If nothing opens, email dealforchange@outlook.com directly.";
   });
 })();
 $("#signOut").addEventListener("click",async e=>{
@@ -1331,7 +1331,7 @@ async function refreshPortal(){
   }catch(err){console.error(err);}
 }
 
-/* ---- Tasks: any member can assign, tasks belong to a person ---- */
+/* ---- Tasks: only officers can assign; tasks belong to a person ---- */
 let taskFilter="mine";
 function renderTasks(){
   const list=PORTAL.tasks.filter(t=>taskFilter==="all"||(ME&&t.assigned_to===ME.id));
@@ -1359,6 +1359,7 @@ $$(".p-filters .chip").forEach(b=>b.addEventListener("click",()=>{
   renderTasks();
 }));
 $("#taskForm").addEventListener("submit",async e=>{
+  if(!isOfficer()){e.preventDefault();$("#tkMsg").textContent="Only officers can assign tasks.";return;}
   e.preventDefault();
   const what=$("#tkWhat").value.trim(),who=$("#tkWho").value,due=$("#tkDue").value;
   if(!what){$("#tkMsg").textContent="Describe the task.";return;}
