@@ -1468,8 +1468,16 @@ function renderPhotos(){
     </div>`;}).join(""):`<p class="small">No photos yet. Add the first one above.</p>`;
 }
 async function loadPhotos(){
-  try{const d=await api("GET","/api/photos");PORTAL.photos=d.photos;renderPhotos();}
-  catch(err){console.error(err);}
+  const note=$("#phNote");
+  try{
+    const d=await api("GET","/api/photos");
+    PORTAL.photos=d.photos;renderPhotos();
+  }catch(err){
+    console.error(err);
+    if(note)note.textContent=err.message.includes("404")
+      ? "Photo saving is not active on the server yet. Replace server.js and redeploy."
+      : "Photos could not be loaded: "+err.message;
+  }
 }
 function shrinkImage(file){
   return new Promise((resolve,reject)=>{
@@ -1506,10 +1514,15 @@ $("#phInput").addEventListener("change",async e=>{
       PORTAL.photos=[d.photo,...(PORTAL.photos||[])];
       renderPhotos();
     }catch(err){
-      alert(err.message||("Could not upload "+f.name));
+      const message=err.message||("Could not upload "+f.name);
+      if(note)note.textContent=message.includes("404")
+        ? "Upload is not active on the server. Replace server.js and redeploy."
+        : "Upload failed: "+message;
+      alert(note?note.textContent:message);
+      return;
     }
   }
-  if(note)note.textContent="Photos are saved to the DEAL account and stay there for everyone to see.";
+  if(note)note.textContent="Upload complete. Photos are saved to the DEAL account and stay there for everyone to see.";
 });
 $("#photoGrid").addEventListener("click",async e=>{
   const a=e.target.closest("[data-phdel]");
