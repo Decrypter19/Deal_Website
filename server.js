@@ -328,7 +328,12 @@ app.delete("/api/announcements/:id", auth, (req, res) => {
 /* ---------- static site ---------- */
 app.use(express.static(path.join(__dirname, "public"), { extensions: ["html"] }));
 app.use("/api", (req, res) => bad(res, 404, "Not found."));
-app.use((err, req, res, next) => { console.error(err); bad(res, 500, "Something went wrong."); });
+app.use((err, req, res, next) => {
+  console.error(err);
+  if (err && err.type === "entity.too.large") return bad(res, 413, "That image is too large. Choose a photo under 6 MB.");
+  if (res.headersSent) return next(err);
+  bad(res, 500, "Something went wrong while saving the photo.");
+});
 
 setInterval(() => db.prepare("DELETE FROM sessions WHERE expires_at<=datetime('now')").run(), 3600e3).unref();
 
